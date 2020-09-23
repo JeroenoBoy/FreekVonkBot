@@ -1,6 +1,5 @@
 import { cmdHandler, Command } from "../..";
 
-import fs from 'fs/promises';
 import path from 'path';
 import { Message } from "discord.js";
 

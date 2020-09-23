@@ -5,7 +5,7 @@ import { Bot, UID, Command } from '../..';
 
 import { EventEmitter } from 'events';
 
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 
 const { prefix } = require('../../../config.json');
@@ -130,14 +130,14 @@ class CommandHandler extends EventEmitter {
 	 */
 	public async loadDir(dir: string) {
 
-		const files = await fs.readdir(dir);
+		const files = await fs.readdirSync(dir);
 
 		files.forEach(async file => {
 			const fdir = path.join(dir, file)
 
 
 			//	Collecting stats
-			const stats = await fs.lstat( fdir );
+			const stats = await fs.lstatSync( fdir );
 
 
 			//	Checking if file/folder should be read
