@@ -44,15 +44,16 @@ class CommandHandler extends EventEmitter {
 		//	This listens for the commands
 		Bot.on('message', async (msg: Message) => {
 			try {
+				if(msg.channel.id == msg.author.dmChannel?.id) return;
 				if(msg.author.id == Bot.user?.id) return;
 
 				//	Checking if the command starts witht he bot prefix
-				if(!msg.content.startsWith(prefix.trim())) return;
+				if(!msg.content.toLowerCase().startsWith(prefix.trim().toLowerCase())) return;
 
 				
 				//	Defining constants
 				const args: string[] = msg.content.substring(prefix.length).split(' ');
-				const cmd: string | undefined = args.shift()?.toLocaleLowerCase();
+				const cmd: string | undefined = args.shift()?.toLowerCase();
 
 				//	Emit event
 				if(!cmd) return this.emit('invalidCommand', cmd, args, msg);
@@ -152,14 +153,17 @@ class CommandHandler extends EventEmitter {
 			}
 			
 
-			//	Getting file
-			const temp = new (require(fdir))();
-
-			//	Checking if its the right class
-			if(!(temp instanceof Command)) return;
-
-			//	Adding to command handler
-			this.loadCommand(temp);
+			try {
+				//	Getting file
+				const temp = new (require(fdir));
+				
+				//	Checking if its the right class
+				if(!(temp instanceof Command)) return;
+	
+				//	Adding to command handler
+				this.loadCommand(temp);
+			}
+			catch {}
 		});
 
 	}

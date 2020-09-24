@@ -18,8 +18,8 @@ class TacoCommand extends Command {
 	async run(cmd: string, args: string[], msg: Message): Promise<any> {
 
 		if(Math.random() > 0.95) {
-			return msg.channel.send('<:TacoTurtle:758298585673891850>')
-				.then(m => m.react('758298585673891850'));
+			return msg.channel.send('<:TacoTurtle:758600127291064321>')
+				.then(m => m.react('758600127291064321'));
 		}
 
 		msg.channel.send('🌮')

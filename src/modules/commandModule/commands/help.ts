@@ -1,5 +1,5 @@
-import { Collection, Message, MessageEmbed } from "discord.js";
-import { cmdHandler, Command, UID } from "../../..";
+import { Collection, Message, MessageEmbed, MessageReaction, PartialUser, User } from "discord.js";
+import { Bot, cmdHandler, Command, UID } from "../../..";
 import table from 'markdown-table';
 
 const { prefix } = require('../../../../config.json');
@@ -18,6 +18,32 @@ class HelpCommand extends Command {
 		this.command = 'help';
 		this.aliases = ['h'];
 		this.description = 'Freek helpt jou wel.';
+
+
+		//	Events
+		Bot.on('messageReactionAdd', (msg: MessageReaction, user: User | PartialUser) => {
+			if(msg.emoji.name != '❌')
+				return;
+
+			if(user.id == Bot.user?.id)
+				return;
+
+			//	Checking if there is an embed set
+			if(msg.message.embeds.length <= 0)
+				return;
+
+			//	Check if this message is an help embed
+			if(msg.message.embeds[0].footer?.text != 'Help Embed')
+				return;
+
+			//	Check if user created this embed
+			if(msg.message.embeds[0].author?.name != user.tag?.split('#')[0])
+				return;
+
+
+			//	Delete embed
+			msg.message.delete();
+		})
 	}
 
 
@@ -33,8 +59,8 @@ class HelpCommand extends Command {
 
 			//	Creating embed
 			const embed = new MessageEmbed()
-				.setAuthor(msg.author.username, msg.author.avatarURL() || '')
-				.setFooter(new Date().toTimeString())
+				.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
+				.setFooter('Help Embed')
 				.setColor('#016064');
 
 			//	Loading into embed, format: name - command
@@ -43,7 +69,7 @@ class HelpCommand extends Command {
 			);
 
 			//	Sending message
-			msg.channel.send(embed);
+			msg.channel.send(embed).then(m => m.react('❌'));
 			return;
 		}
 
@@ -60,8 +86,8 @@ class HelpCommand extends Command {
 		
 		//	Creating embed
 		const embed = new MessageEmbed()
-			.setAuthor(msg.author.username, msg.author.avatarURL() || '')
-			.setFooter(new Date().toTimeString())
+			.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
+			.setFooter('Help Embed')
 			.setColor('#016064')
 			.addField('Command', data.command)
 			.addField('Usage', data.usage.replace(/\$p/g, prefix))
@@ -76,7 +102,7 @@ class HelpCommand extends Command {
 			embed.addField('permissions', data.permissions.toString());
 
 		//	Sending embed
-		msg.channel.send(embed);
+		msg.channel.send(embed).then(m => m.react('❌'));
 	}
 
 
@@ -102,12 +128,13 @@ class HelpCommand extends Command {
 
 	protected drawTable(uids: UID[]): String {
 
-		const data = [['Commando', 'Naam']];
+		const data = [['Opdracht', 'Naam']];
 
 		uids.forEach(id => {
 			const cmd = cmdHandler.commandData.get(id);
 
-			data.push([cmd?.command || 'INVALID', cmd?.name || 'INVALID'])
+			if(!cmd?.hidden)
+				data.push([cmd?.command || 'INVALID', cmd?.name || 'INVALID'])
 		})
 
 		return "```" + table(data) + "```";

@@ -15,19 +15,23 @@ import sleep from './util/sleep';
 import CommandHandler from './handlers/CommandHandler/CommandHandler';
 import Command from './handlers/CommandHandler/Command';
 
-
-import path from 'path';
 import MorseCode from './modules/morse/MorseCode';
 import CmdModule from './modules/commandModule/cmdModule';
+import VoiceModule from './modules/voice/VoiceModule';
+
 
 //
 //	Setting up
 //
 
-const Bot = new Client();
-var cmdHandler: CommandHandler;
+const Bot = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'] });
+const cmdHandler = new CommandHandler;
 
-const modules: any = {};
+const modules = {
+	cmdModule: new CmdModule,
+	morse: new MorseCode,
+	voice: new VoiceModule()
+};
 
 export {
 	Bot,
@@ -37,21 +41,16 @@ export {
 	cmdHandler,
 	modules,
 }
-(async () => {
-	
-	cmdHandler = await new CommandHandler();
-	
-	modules.morse = await new MorseCode();
-	modules.cmdModule = await new CmdModule();
 
-	//
-	//	Logging bot in
-	//
+
+//
+//	Logging bot in
+//
+
+Bot.login(process.env.BOT_TOKEN);
+Bot.on('ready', () => {
+	console.log('Hey i logged in as: ' + chalk.green(Bot.user?.tag) + '.');
+	console.log('started');
 	
-	Bot.login(process.env.BOT_TOKEN);
-	Bot.on('ready', () => {
-		console.log('Hey i logged in as: ' + chalk.green(Bot.user?.tag) + '.');
-		
-		Bot.user?.setActivity('Chillen met haaien.', { type: 'CUSTOM_STATUS' });
-	});
-})();
+	Bot.user?.setActivity('Chillen met haaien.', { type: 'CUSTOM_STATUS' });
+});

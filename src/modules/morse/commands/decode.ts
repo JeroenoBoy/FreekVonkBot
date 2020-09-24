@@ -18,7 +18,7 @@ class TestCommand extends Command {
 	async run(cmd: string, args: string[], msg: Message) {
 
 		await msg.channel.send(new MessageEmbed()
-		.setAuthor(msg.author.username, msg.author.avatarURL() || '')
+		.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
 			.setColor('#1f456e')
 			.setDescription( Morse.decode( args.join(' ') ) ));
 	}

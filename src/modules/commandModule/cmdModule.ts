@@ -22,7 +22,7 @@ class CmdModule {
 		}
 
 		else {
-			msg.channel.send('Dit commando komt niet bekend voor bij mij.');
+			msg.channel.send('Deze opdracht komt niet bekend voor bij mij.');
 		}
 
 	}

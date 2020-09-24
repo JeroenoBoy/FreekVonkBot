@@ -1,6 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
 import { Command } from "../../../..";
-import fetch from 'node-fetch';
 
 export =
 class TacoCommand extends Command {

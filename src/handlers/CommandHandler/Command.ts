@@ -18,6 +18,8 @@ class Command {
 	public permissions: PermissionResolvable | null = null;
 	public permissionMessage = defaultPermissionsMessage;
 
+	public hidden: boolean = false;
+
 	preSetup(id: UID) {
 		this.id = id;
 		this.setup();

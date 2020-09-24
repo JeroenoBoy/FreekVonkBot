@@ -51,7 +51,7 @@ class MemeCommand extends Command {
 			.setURL('https://www.reddit.com' + post.permalink)
 			.setColor('#f0dc82')
 			
-			.setAuthor(post.subreddit, msg.author.avatarURL() || '')
+			.setAuthor('r/' + post.subreddit, msg.author.avatarURL() || '')
 			.setDescription(post.title)
 			.setImage(post.url)
 			.setFooter(new Date().toTimeString());

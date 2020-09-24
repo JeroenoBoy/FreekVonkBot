@@ -8,7 +8,7 @@ import Morse from './MorseTranslator';
 
 const { prefix } = require('../../../config.json');
 
-export default
+export =
 class MorseCode {
 	
 	protected morseChannel: string = '';
@@ -23,7 +23,7 @@ class MorseCode {
 		cmdHandler.loadDir(path.join(__dirname, 'commands'));
 
 		var json = JSON.parse(
-			fs.readFileSync( path.join(__dirname, 'data.json'), { encoding:'utf8' } )
+			fs.readFileSync( path.join(__dirname, '../../../data.json'), { encoding:'utf8' } )
 		);
 
 		this.decodeChannel = json.decoded;
@@ -47,7 +47,7 @@ class MorseCode {
 				//	Kek
 				try{
 					ch.send(new MessageEmbed()
-						.setAuthor(msg.author.username, msg.author.avatarURL() || '')
+						.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
 						.setDescription(Morse.decode(msg.content))
 						.setURL(msg.url)
 						.setFooter((new Date()).toDateString()));
@@ -102,7 +102,7 @@ class MorseCode {
 	protected save() {
 
 		fs.writeFileSync(
-			path.join(__dirname, 'data.json'), 
+			path.join(__dirname, '../../../data.json'), 
 			JSON.stringify({
 				decoded: this.decodeChannel,
 				encoded: this.morseChannel
