@@ -7,13 +7,13 @@ export =
 class DespacitoCommand extends Command {
 
 	setup() {
-		this.name = 'Kom eens hier';
-		this.command = 'kom';
+		this.name = 'Ga eens weg';
+		this.command = 'ga';
 
 		this.catagory = 'Voice';
 
-		this.usage = '$pkom';
-		this.description = 'Laat freek joinen';
+		this.usage = '$pga';
+		this.description = 'Laat freek weg gaan';
 	}
 
 
@@ -24,8 +24,8 @@ class DespacitoCommand extends Command {
 		
 
 		//	Check if the bot is in another channel
-		if(modules.voice.isConnected())
-			return msg.reply('Ik zit al in een voice kanaal.');
+		if(!modules.voice.isConnected())
+			return msg.reply('Ik zit niet in een voice kanaal.');
 
 
 		//	Checking of de GuildMember gevonden kan woorden
@@ -34,11 +34,11 @@ class DespacitoCommand extends Command {
 
 
 		//	Checken of die in een voice kanaal zit.
-		if(!member.voice.channel)
-			return msg.reply('Je bent niet in een voice kanaal.');
+		if(member.voice.channel?.id != modules.voice.getChannel()?.id)
+			return msg.reply('Je bent niet in het voice kanaal van Freek.');
 
 		
-		modules.voice.connect(member.voice.channel);
+		modules.voice.disconnect();
 		msg.react('✅');
 	}
 }

@@ -7,14 +7,14 @@ export =
 class DespacitoCommand extends Command {
 
 	setup() {
-		this.name = 'Freek Zingt';
-		this.command = 'speel';
+		this.name = 'Freek skipt';
+		this.command = 'volgende';
 
 		this.catagory = 'Voice';
 
-		this.usage = '$pp [song]';
-		this.aliases = ['play', 'p'];
-		this.description = 'Laat freek zingen';
+		this.usage = '$pskip';
+		this.aliases = ['skip', 'next'];
+		this.description = 'Laat freek een ander lietje zingen.';
 	}
 
 
@@ -44,16 +44,7 @@ class DespacitoCommand extends Command {
 			return msg.reply('Je bent niet in het kanaal van Freek.');
 			
 		
-		const {url, uid} = await modules.voice.queue(args.join(' '), member.user);
-		await msg.reply('[`'+ uid.id +'`] Toegevoegd aan lijst:' + url)
+		modules.voice.playNext();
 		msg.react('✅')
-		try {
-		
-		} catch {
-
-			msg.reply('Dit nummer is te lang of de LINK kan ik niet herkennen.');
-
-		}
-
 	}
 }

@@ -1,7 +1,6 @@
 import { Collection, Message } from "discord.js";
-import { Command, modules } from "../../..";
+import { Bot, Command, modules } from "../../..";
 import path from 'path';
-import ytdl from 'ytdl-core';
 import SongItem from "../SongItem";
 
 
@@ -23,14 +22,18 @@ class DespacitoCommand extends Command {
 		this.usage = '$ptroll [song]';
 		this.description = 'Alexa play despacito.';
 		
-		this.songs.set('roller', new SongItem('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'null'));
-		this.songs.set('despacito', new SongItem('https://www.youtube.com/watch?v=gm3-m2CFVWM', 'null'));
-		this.songs.set('uno', new SongItem('https://www.youtube.com/watch?v=W3GrSMYbkBE', 'null'));
-		this.songs.set('minecito', new SongItem('https://www.youtube.com/watch?v=Gl6ekgobG2k', 'null'));
-		this.songs.set('twitter', new SongItem('https://www.youtube.com/watch?v=1VaHIflPemM', 'null'));
-		this.songs.set('star', new SongItem('https://www.youtube.com/watch?v=L_jWHffIx5E', 'null'));
-		this.songs.set('bitch', new SongItem('https://www.youtube.com/watch?v=6Dh-RL__uN4', 'null'));
-		this.songs.set('balpijn', new SongItem('https://www.youtube.com/watch?v=qPd1YWTSwE0&t=12s', 'null'));
+		if(!Bot.user) return console.log('FUCK ME');
+
+		this.songs.set('roller', new SongItem('https://www.youtube.com/watch?v=dQw4w9WgXcQ', Bot.user, '212', 'Get Rickrolled'));
+		this.songs.set('despacito', new SongItem('https://www.youtube.com/watch?v=gm3-m2CFVWM', Bot.user, '240', 'Freek play despacito'));
+		this.songs.set('uno', new SongItem('https://www.youtube.com/watch?v=W3GrSMYbkBE', Bot.user, '124', 'UUNNNOOOO'));
+		this.songs.set('minecito', new SongItem('https://www.youtube.com/watch?v=Gl6ekgobG2k', Bot.user, '244', 'Minecraft cito'));
+		this.songs.set('twitter', new SongItem('https://www.youtube.com/watch?v=1VaHIflPemM', Bot.user, '58', 'Twitter is goed'));
+		this.songs.set('star', new SongItem('https://www.youtube.com/watch?v=L_jWHffIx5E', Bot.user, '236', 'Ur an all star'));
+		this.songs.set('bitch', new SongItem('https://www.youtube.com/watch?v=6Dh-RL__uN4', Bot.user, '134', 'Fuck t-series'));
+		this.songs.set('balpijn', new SongItem('https://www.youtube.com/watch?v=qPd1YWTSwE0', Bot.user, '227', 'Eenbaljongenman'));
+		this.songs.set('robot pik', new SongItem('https://www.youtube.com/watch?v=rv9zEcispCU', Bot.user, '192', 'Robot penis'));
+		this.songs.set('anime', new SongItem('https://www.youtube.com/watch?v=5eDv6aKOTK0', Bot.user, '93', 'Anime titties'))
 	}
 
 	

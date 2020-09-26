@@ -47,7 +47,7 @@ class MorseCode {
 				//	Kek
 				try{
 					ch.send(new MessageEmbed()
-						.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
+						.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
 						.setDescription(Morse.decode(msg.content))
 						.setURL(msg.url)
 						.setFooter((new Date()).toDateString()));

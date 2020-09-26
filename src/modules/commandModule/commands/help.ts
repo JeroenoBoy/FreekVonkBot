@@ -37,7 +37,7 @@ class HelpCommand extends Command {
 				return;
 
 			//	Check if user created this embed
-			if(msg.message.embeds[0].author?.name != user.tag?.split('#')[0])
+			if(msg.message.embeds[0].author?.name != user.tag)
 				return;
 
 
@@ -59,7 +59,7 @@ class HelpCommand extends Command {
 
 			//	Creating embed
 			const embed = new MessageEmbed()
-				.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
+				.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
 				.setFooter('Help Embed')
 				.setColor('#016064');
 
@@ -86,7 +86,7 @@ class HelpCommand extends Command {
 		
 		//	Creating embed
 		const embed = new MessageEmbed()
-			.setAuthor(msg.author.tag?.split('#')[0], msg.author.avatarURL() || '')
+			.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
 			.setFooter('Help Embed')
 			.setColor('#016064')
 			.addField('Command', data.command)

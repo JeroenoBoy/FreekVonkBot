@@ -1,4 +1,4 @@
-import { Collection, StreamDispatcher, StreamOptions, VoiceChannel, VoiceConnection } from "discord.js"
+import { Collection, StreamDispatcher, StreamOptions, User, VoiceChannel, VoiceConnection } from "discord.js"
 import { Bot, cmdHandler, modules, UID } from "../..";
 
 import path from 'path';
@@ -14,10 +14,15 @@ class VoiceModule {
 	protected connection: VoiceConnection | null = null;
 
 	protected songQueue: SongItem[] = [];
+	protected nowPlaying: SongItem | null = null;
 	
 	protected dispatcher: StreamDispatcher | null = null;
 
 	protected forcePlayBool: boolean = false;
+
+	protected quitTimeOut: null | NodeJS.Timeout = null;
+	protected disconnectTimeout: number = 1000;
+
 
 	/**
 	 * Load the module
@@ -60,7 +65,7 @@ class VoiceModule {
 	 * @param urlOrString url to an video or an string
 	 * @param id id of the requested user
 	 */
-	async queue(urlOrString: string, id: string): Promise<{url: string, uid: UID}> {
+	async queue(urlOrString: string, user: User): Promise<{url: string, uid: UID}> {
 		if(!this.connected || !this.connection)
 			throw new Error('Bot is not connected');
 
@@ -81,13 +86,15 @@ class VoiceModule {
 
 		//	Validate the url
 		const isInvalidvalid = await this.validateVideo(urlOrString);
-		if(typeof isInvalidvalid == 'string')
+		if(typeof isInvalidvalid == 'string') {
+			console.log(isInvalidvalid);
 			throw new Error('Invalid: ' + isInvalidvalid);
+		}
 
 		
 		//	Adding song
 		const a = this.songQueue.push(
-			new SongItem(urlOrString, id)
+			new SongItem(urlOrString, user, isInvalidvalid.videoDetails.lengthSeconds, isInvalidvalid.videoDetails.title)
 		);
 
 		const uid = this.songQueue[a-1].uid
@@ -113,11 +120,14 @@ class VoiceModule {
 		if(!this.connected || !this.connection)
 			throw new Error('Bot is not connected');
 
+		if(this.dispatcher != null)
+			return this.destroyDispatcher();
+
 		const song = this.songQueue[0];
 		if(!song) return;
 
 		this.play(song);
-		
+
 		this.songQueue.shift();
 	}
 
@@ -146,8 +156,12 @@ class VoiceModule {
 	 */
 	protected play(song: SongItem) {
 
+		if(this.quitTimeOut != null)
+			this.clearTimeout();
+
 		if(!this.connected || !this.connection)
 			throw new Error('Bot is not connected');
+
 
 		//	Speel het liedje af
 		this.dispatcher = this.connection.play(
@@ -155,29 +169,26 @@ class VoiceModule {
 			{volume: 0.5}
 		);
 
+		//	Set the current playing song to this
+		this.nowPlaying = song;
+
+
 		//
 		//	Events
 		//
 
 		this.dispatcher.on('close', async () => {
+			this.nowPlaying = null;
+
+			if(!this.songQueue[0] && this.quitTimeOut == null)
+				this.quitTimeOut = setTimeout(() => this.disconnect(), this.disconnectTimeout)
+
 			if(this.forcePlayBool)
 				return this.forcePlayBool = false;
 			
-			await this.destroyDispatcher()
 			this.playNext();
 		})
-	}
-
-
-
-	/**
-	 * Destroy the dispatcher
-	 */
-	private async destroyDispatcher() {
-		if(!this.dispatcher) return;
 		
-		this.dispatcher.destroy();
-		this.dispatcher = null;
 	}
 
 
@@ -204,14 +215,21 @@ class VoiceModule {
 		if(!this.connected || !this.connection)
 			throw new Error('Bot is not connected');
 
-		this.connected = false;
+		this.connected = false;		
 		this.songQueue = [];
 		
-		await this.connection?.disconnect();
+		this.destroyDispatcher();
+		await this.connection.disconnect();
 		this.connection = null;
 	}
 
 
+
+	//
+	//
+	//	Utility
+	//
+	//
 
 	/**
 	 * check if the URL is valid or not.
@@ -228,6 +246,30 @@ class VoiceModule {
 			return 'VIDEO_TOO_LONG';
 
 		return link;
+	}
+
+
+
+	/**
+	 * Clear the current disconnect timeout
+	 */
+	protected clearTimeout() {
+		if(this.quitTimeOut == null)
+			return;
+		
+		clearTimeout(this.quitTimeOut);
+	}
+
+
+
+	/**
+	 * Destroy the dispatcher
+	 */
+	protected destroyDispatcher() {
+		if(!this.dispatcher) return;
+		
+		this.dispatcher.destroy();
+		this.dispatcher = null;
 	}
 
 
@@ -250,5 +292,19 @@ class VoiceModule {
 	 */
 	isConnected(): boolean {
 		return this.connected;
+	}
+
+	/**
+	 * Get the song queue
+	 */
+	getSongQueue(): SongItem[] {
+		return this.songQueue;
+	}
+
+	/**
+	 * Get the current playing song
+	 */
+	getPlaying(): SongItem | null {
+		return this.nowPlaying;
 	}
 }
