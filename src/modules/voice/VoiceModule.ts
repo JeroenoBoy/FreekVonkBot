@@ -21,7 +21,10 @@ class VoiceModule {
 	protected forcePlayBool: boolean = false;
 
 	protected quitTimeOut: null | NodeJS.Timeout = null;
-	protected disconnectTimeout: number = 1000;
+	protected disconnectTimeout: number = 5e3;
+
+
+	protected volume = 0.5;
 
 
 	/**
@@ -65,13 +68,15 @@ class VoiceModule {
 	 * @param urlOrString url to an video or an string
 	 * @param id id of the requested user
 	 */
-	async queue(urlOrString: string, user: User): Promise<{url: string, uid: UID}> {
+	public async queue(urlOrString: string, user: User): Promise< QueueError | {url: string, uid: UID}> {
 		if(!this.connected || !this.connection)
 			throw new Error('Bot is not connected');
 
 
 		//	Test if its an string
 		if(!urlOrString.match(/^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)) {
+
+			try{
 
 			const filters2 = await ytsr(null,
 				{
@@ -81,14 +86,17 @@ class VoiceModule {
 
 			//	@ts-ignore
 			urlOrString = filters2.items[0].link;
+
+			}catch{
+				return 'INVALID_URL';
+			}
 		}
 
 
 		//	Validate the url
 		const isInvalidvalid = await this.validateVideo(urlOrString);
 		if(typeof isInvalidvalid == 'string') {
-			console.log(isInvalidvalid);
-			throw new Error('Invalid: ' + isInvalidvalid);
+			return isInvalidvalid;
 		}
 
 		
@@ -121,7 +129,7 @@ class VoiceModule {
 			throw new Error('Bot is not connected');
 
 		if(this.dispatcher != null)
-			return this.destroyDispatcher();
+			this.destroyDispatcher();
 
 		const song = this.songQueue[0];
 		if(!song) return;
@@ -142,8 +150,6 @@ class VoiceModule {
 			throw new Error('Bot is not connected');
 
 		this.forcePlayBool = true;
-
-		await this.destroyDispatcher();
 		this.play(song);
 	}
 
@@ -166,7 +172,7 @@ class VoiceModule {
 		//	Speel het liedje af
 		this.dispatcher = this.connection.play(
 			ytdl(song.url, { filter: 'audioonly' }),
-			{volume: 0.5}
+			{volume: this.volume}
 		);
 
 		//	Set the current playing song to this
@@ -179,12 +185,13 @@ class VoiceModule {
 
 		this.dispatcher.on('close', async () => {
 			this.nowPlaying = null;
-
-			if(!this.songQueue[0] && this.quitTimeOut == null)
-				this.quitTimeOut = setTimeout(() => this.disconnect(), this.disconnectTimeout)
-
+			
 			if(this.forcePlayBool)
 				return this.forcePlayBool = false;
+
+			if(!this.songQueue[0] && this.quitTimeOut == null)
+				return this.quitTimeOut = setTimeout(() => this.disconnect(), this.disconnectTimeout)
+			
 			
 			this.playNext();
 		})
@@ -235,7 +242,7 @@ class VoiceModule {
 	 * check if the URL is valid or not.
 	 * @param url url
 	 */
-	async validateVideo(url: string): Promise< string | ytdl.videoInfo > {
+	async validateVideo(url: string): Promise< ValidateErrors | ytdl.videoInfo > {
 		
 		if(!ytdl.validateURL(url))
 			return 'INVALID_URL'
@@ -307,4 +314,27 @@ class VoiceModule {
 	getPlaying(): SongItem | null {
 		return this.nowPlaying;
 	}
+
+	/**
+	 * Get the current volume
+	 */
+	getVolume(): number {
+		return this.volume*100
+	}
+
+	/**
+	 * Set the volume
+	 */
+	setVolume(vol: number) {
+		this.volume = vol/100;
+		if(this.dispatcher)
+			this.dispatcher.setVolume(this.volume);
+	}
+
+
 }
+
+
+
+type ValidateErrors = 'INVALID_URL' | 'VIDEO_TOO_LONG';
+type QueueError = 'INVALID_URL' | 'VIDEO_TOO_LONG';

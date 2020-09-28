@@ -43,8 +43,11 @@ class DespacitoCommand extends Command {
 		const member = await (msg.guild?.members
 			.cache.get(msg.author.id));
 
-		const song = this.songs.get(args.join(' '));
-		if(!song) return msg.reply('this song doesn\'t exist')
+		// const song = this.songs.get(args.join(' '));
+		// if(!song) return msg.reply('this song doesn\'t exist')
+
+		if(!Bot.user)
+			return;
 		
 
 		//	Checking of de GuildMember gevonden kan woorden
@@ -67,7 +70,7 @@ class DespacitoCommand extends Command {
 
 
 		//	Forceplay een liedje
-		await modules.voice.forcePlay(song);
+		await modules.voice.forcePlay(new SongItem('https://www.youtube.com/watch?v=5qap5aO4i9A', Bot.user, '999', 'LoFi Beats'));
 
 		msg.channel.send('✅')
 			.then(m => m.delete({timeout: 1000}));

@@ -7,18 +7,19 @@ export =
 class DespacitoCommand extends Command {
 
 	setup() {
-		this.name = 'Freek Zingt';
-		this.command = 'speel';
+		this.name = 'Freek veranderd volume';
+		this.command = 'volume';
 
 		this.catagory = 'Voice';
 
-		this.usage = '$pp [song]';
-		this.aliases = ['play', 'p'];
-		this.description = 'Laat freek zingen';
+		this.usage = '$pvolume [nummer]';
+		this.aliases = ['vol'];
+		this.description = 'Verander het volume van freek';
 	}
 
 
 	async run(cmd: string, args: string[], msg: Message): Promise<any> {
+
 
 		const member = await (msg.guild?.members
 			.cache.get(msg.author.id));
@@ -43,20 +44,15 @@ class DespacitoCommand extends Command {
 		if(member.voice.channel?.id != modules.voice.getChannel()?.id)
 			return msg.reply('Je bent niet in het kanaal van Freek.');
 			
-		
-		const response = await modules.voice.queue(args.join(' '), member.user);
 
 
-		//	More error handling
-		if(response == 'INVALID_URL')
-			return msg.reply('Kon de URL/titel niet vinden');
+		//	Check volume
+		const vol = parseInt(args[0]);
+		if(!vol)
+			return msg.reply('Volume moet een nummer zijn.');
 
-		if(response == 'VIDEO_TOO_LONG')
-			return msg.reply('Deze video is te lang');
-		
-
-		//	En uit endelijk kan die verder
-		await msg.reply('[`'+ response.uid.id +'`] Toegevoegd aan lijst:' + response.url)
+			
+		modules.voice.setVolume(vol);
 		msg.react('✅')
 	}
 }
