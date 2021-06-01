@@ -18,6 +18,7 @@ import Command from './handlers/CommandHandler/Command';
 import MorseCode from './modules/morse/MorseCode';
 import CmdModule from './modules/commandModule/cmdModule';
 import VoiceModule from './modules/voice/VoiceModule';
+import BirthdayModule from './modules/birthday/Birthday';
 import { setupSlashCommands } from './slashcommands/handler';
 
 
@@ -31,9 +32,10 @@ const cmdHandler = new CommandHandler;
 setupSlashCommands(Bot);
 
 const modules = {
-	cmdModule: new CmdModule,
-	morse: new MorseCode,
-	voice: new VoiceModule()
+	cmdModule: new CmdModule(),
+	morse: new MorseCode(),
+	voice: new VoiceModule(),
+	birthdat: new BirthdayModule()
 };
 
 export {
