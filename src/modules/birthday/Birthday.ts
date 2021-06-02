@@ -73,12 +73,6 @@ class Birthday {
 
 
 	async checkBirthday(birthday: BirthdayFormat, today: BirthdayFormat, dayAdders: number[], user: string) {
-		// if(this.compareDates(birthday, today)) {
-		// 	return this.notifyChannel.send(`Gefeliciteerd <@!${user}> met je verjaardag!`);
-		// }
-			
-		console.log(today, birthday, this.compareDates(birthday, today))
-		console.log(user);
 		for(const adder of dayAdders) {
 			const date = this.subtractDate(birthday, adder);
 
