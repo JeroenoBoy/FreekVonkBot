@@ -35,7 +35,7 @@ const modules = {
 	cmdModule: new CmdModule(),
 	morse: new MorseCode(),
 	voice: new VoiceModule(),
-	birthdat: new BirthdayModule()
+	birthday: new BirthdayModule()
 };
 
 export {

@@ -1,4 +1,4 @@
-import { GuildMember, Message, TextChannel } from "discord.js";
+import { GuildMember, Message, TextChannel, User } from "discord.js";
 import { Bot } from "../..";
 import schedule from 'node-schedule';
 
@@ -11,6 +11,13 @@ class Birthday {
 	private birthdays = new Map<string, BirthdayFormat>();
 	private _channel: string = '763771443627425833';
 	private _notifyChannel: string = '753262395857829940';
+
+
+	private birthdayGifs = [
+		'https://giphy.com/gifs/Just-Dance-birthday-happybirthday-bday-feio2yIUMtdqWjRiaF',
+		'https://tenor.com/view/monkey-ape-dance-dancing-orangutan-gif-13620205',
+		'https://tenor.com/view/wine-drinking-girl-happy-birthday-gif-14950409'
+	];
 
 
 	private get channel() {
@@ -35,13 +42,8 @@ class Birthday {
 			});
 
 
-			schedule.scheduleJob('* 12 * * *', () => {
-				const date = new Date();
-				const cDay = date.getDate()
-				const cMonth = date.getMonth()+1;
-				const cYear = date.getFullYear();
-
-				const today: BirthdayFormat = [cDay, cMonth, cYear];
+			schedule.scheduleJob('0 12 * * *', () => {
+				const today = this.today();
 				
 				this.birthdays.forEach((birthday, user) => {
 					this.checkBirthday(birthday, today, [1, 2, 3, 5, 10], user);
@@ -73,6 +75,13 @@ class Birthday {
 
 
 	async checkBirthday(birthday: BirthdayFormat, today: BirthdayFormat, dayAdders: number[], user: string) {
+
+		if(this.compareDates(today, birthday)) {
+			const gif = this.birthdayGifs[ Math.floor( Math.random() * this.birthdayGifs.length ) ]
+			await this.notifyChannel.send(`Happy birthday <@${user}>!\n${gif}`);
+		}
+
+
 		for(const adder of dayAdders) {
 			const date = this.subtractDate(birthday, adder);
 
@@ -81,6 +90,15 @@ class Birthday {
 				return this.notifyChannel.send(`**${member!.nickname}** is over **${adder}** dag${adder == 1 ? '' : 'en'} jarig!`);
 			}
 		}
+	}
+
+
+	isBirthday(user: string) {
+		const today = this.today();
+		const bd = this.birthdays.get(user);
+
+		if(!bd) return false;
+		return this.compareDates(today, bd);
 	}
 
 
@@ -111,4 +129,14 @@ class Birthday {
 	daysInMonth(month: number, year: number) {
 		return new Date(year, month, 0).getDate();
 	}	
+
+
+	today(): BirthdayFormat {
+		const date = new Date();
+		const cDay = date.getDate()
+		const cMonth = date.getMonth()+1;
+		const cYear = date.getFullYear();
+
+		return [cDay, cMonth, cYear];
+	}
 }
