@@ -87,7 +87,7 @@ class Birthday {
 
 			if(this.compareDates(today, date)) {
 				const member = await this.notifyChannel.guild.members.fetch(user);
-				return this.notifyChannel.send(`**${member!.nickname}** is over **${adder}** dag${adder == 1 ? '' : 'en'} jarig!`);
+				return this.notifyChannel.send(`**${member.displayName}** is over **${adder}** dag${adder == 1 ? '' : 'en'} jarig!`);
 			}
 		}
 	}
