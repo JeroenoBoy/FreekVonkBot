@@ -5,7 +5,7 @@ import table from 'markdown-table';
 
 
 export =
-class anime extends Command {
+class manga extends Command {
 
 	cooldown: number = 30000;
 	lastUsage: number = 0;
@@ -13,11 +13,11 @@ class anime extends Command {
 	floodmsg: string = '';
 
 	setup() {
-		this.name = 'Anime';
-		this.usage = '$panime <query>';
+		this.name = 'Manga';
+		this.usage = '$pmanga <query>';
 		this.catagory = 'WEEBSH1T';
 
-		this.command = 'anime';
+		this.command = 'manga';
 		this.description = 'find some weebshit'
 	}
 
@@ -138,16 +138,19 @@ class anime extends Command {
 	makeAnimeDisplay(target: any, msg: Message) {
 		const member = msg.member as GuildMember;
 
+		let _a;
+
 		msg.edit({content: '‫  ‫uwu',embeds: [
 			new MessageEmbed()
 				.setAuthor(member.displayName, member.user.displayAvatarURL())
-				.setTitle('Anime: ' + target.title.english ?? target.title.romaji ?? target.title.native)
+				.setTitle('Manga: ' + target.title.english ?? target.title.romaji ?? target.title.native)
 				.setDescription(target.description
 					.replace(/<i>([^<>]*)<\/i>/g,'*$1*')
 					.replace(/<b>([^<>]*)<\/b>/g,'**$1**')
 					.replace(/<br><br>/g,''))
 				.addField('Format', target.format, true)
-				.addField('Episodes', target.episodes.toString(), true)
+				.addField('Chapters', (_a=target.chapters) ? _a.toString() : 'unkown', true)
+				.addField('Volumes', (_a=target.volumes) ? _a.toString() : 'unkown', true)
 				.addField('Other names', target.title.romaji + '\n' + target.title.native)
 				.setImage(target.bannerImage)
 				.setThumbnail(target.coverImage.large)
@@ -169,13 +172,14 @@ class anime extends Command {
 					query($search: String, $page: Int) {
 						Page(page: $page, perPage: 5) {
 							pageInfo { total, currentPage }
-							media(search: $search, type: ANIME) {
+							media(search: $search, type: MANGA) {
 								title { english romaji native }
 								coverImage { large }
 								id
 								type
 								description
-								episodes
+								chapters
+								volumes
 								format
 								bannerImage
 								siteUrl
@@ -202,12 +206,13 @@ class anime extends Command {
 			body: JSON.stringify({
 				query: `
 					query($id: Int) {
-						Media(id: $id, type: ANIME) {
+						Media(id: $id, type: MANGA) {
 							title { english romaji native }
 							coverImage { large }
 							type
 							description
-							episodes
+							chapters
+							volumes
 							format
 							bannerImage
 							siteUrl
