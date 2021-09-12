@@ -46,15 +46,17 @@ class MorseCode {
 
 				//	Kek
 				try{
-					ch.send(new MessageEmbed()
-						.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
-						.setDescription(Morse.decode(msg.content))
-						.setURL(msg.url)
-						.setFooter((new Date()).toDateString()));
+					ch.send({embeds:[
+						new MessageEmbed()
+							.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
+							.setDescription(Morse.decode(msg.content))
+							.setURL(msg.url)
+							.setFooter((new Date()).toDateString())
+						]});
 				}catch {
 					const m = await msg.reply('De parser kon dit niet begrijpen!');
-					m.delete({timeout: 2500});
-					msg.delete({timeout: 2500});
+					setTimeout(() => m.delete(), 2500);
+					setTimeout(() => msg.delete(), 2500);
 				}
 			}
 
@@ -70,7 +72,7 @@ class MorseCode {
 					ch.send(Morse.encode(msg.content));
 				}catch {
 					msg.reply('De parser kon dit niet begrijpen!')
-						.then(m => m.delete({timeout: 2500}));
+						.then(m =>setTimeout(() => m.delete(), 2500));
 				}
 			}
 
@@ -119,7 +121,7 @@ class MorseCode {
 		if (!ch) return;
 
 		// Using a type guard to narrow down the correct type
-		if (!((ch): ch is TextChannel => ch.type === 'text')(ch)) return;
+		if (!((ch): ch is TextChannel => ch.type === 'GUILD_TEXT')(ch)) return;
 
 		return ch;
 	}

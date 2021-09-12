@@ -42,7 +42,7 @@ class CommandHandler extends EventEmitter {
 		if(this.setup) return;
 
 		//	This listens for the commands
-		Bot.on('message', async (msg: Message) => {
+		Bot.on('messageCreate', async (msg) => {
 			try {
 				if(msg.channel.id == msg.author.dmChannel?.id) return;
 				if(msg.author.id == Bot.user?.id) return;
@@ -56,7 +56,7 @@ class CommandHandler extends EventEmitter {
 				const cmd: string | undefined = args.shift()?.toLowerCase();
 
 				//	Emit event
-				if(!cmd) return this.emit('invalidCommand', cmd, args, msg);
+				if(!cmd) return this.emit('invalidCommand', cmd, args, msg) as any  as void;
 
 				//	Getting command
 				let command = this.commands.get(cmd);
@@ -67,7 +67,7 @@ class CommandHandler extends EventEmitter {
 
 					//	Emit event of command non exist
 					if(command == null)
-						return this.emit('invalidCommand', cmd, args, msg);
+						return this.emit('invalidCommand', cmd, args, msg) as any  as void;
 				}
 
 				//	Get Command
@@ -77,8 +77,8 @@ class CommandHandler extends EventEmitter {
 				if(commandData.permissions != null) {
 					const member = await msg.guild?.members.fetch(msg.author.id);
 
-					if(!member?.hasPermission(commandData.permissions)) {
-						return msg.reply(commandData.permissionMessage);
+					if(!member?.permissions.has(commandData.permissions)) {
+						return msg.reply(commandData.permissionMessage) as any as void;
 					}
 				}
 

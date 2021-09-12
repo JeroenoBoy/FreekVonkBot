@@ -62,7 +62,7 @@ class Birthday {
 	addBirthday(msg: Message) {
 		if(!msg.content.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
 			// msg.delete();
-			return msg.reply('Date must be formatted as \'dd/mm/yyyy\'\nPlease delete your message and send a new one with the correct formatting.').then(m=>m.delete({timeout: 5000}));
+			return msg.reply('Date must be formatted as \'dd/mm/yyyy\'\nPlease delete your message and send a new one with the correct formatting.').then(m=>setTimeout(()=>m.delete(), 5000));
 		}
 
 		let [ _day, _month, _year ] = msg.content.split('/');

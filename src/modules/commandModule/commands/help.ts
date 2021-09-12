@@ -21,7 +21,7 @@ class HelpCommand extends Command {
 
 
 		//	Events
-		Bot.on('messageReactionAdd', (msg: MessageReaction, user: User | PartialUser) => {
+		Bot.on('messageReactionAdd', (msg, user) => {
 			if(msg.emoji.name != '❌')
 				return;
 
@@ -69,7 +69,7 @@ class HelpCommand extends Command {
 			);
 
 			//	Sending message
-			msg.channel.send(embed).then(m => m.react('❌'));
+			msg.channel.send({embeds:[embed]}).then(m => m.react('❌'));
 			return;
 		}
 
@@ -80,7 +80,7 @@ class HelpCommand extends Command {
 			|| cmd.name.toLowerCase() == args.join(' ').toLowerCase());
 
 		if(!data) {
-			msg.channel.send('couldn\'t find this command exist');
+			msg.channel.send({content:'couldn\'t find this command exist'});
 			return;
 		}
 		
@@ -102,7 +102,7 @@ class HelpCommand extends Command {
 			embed.addField('permissions', data.permissions.toString());
 
 		//	Sending embed
-		msg.channel.send(embed).then(m => m.react('❌'));
+		msg.channel.send({embeds:[embed]}).then(m => m.react('❌'));
 	}
 
 
@@ -126,7 +126,7 @@ class HelpCommand extends Command {
 	}
 
 
-	protected drawTable(uids: UID[]): String {
+	protected drawTable(uids: UID[]): string {
 
 		const data = [['Opdracht', 'Naam']];
 

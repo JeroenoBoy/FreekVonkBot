@@ -16,8 +16,8 @@ class TacoCommand extends Command {
 
 
 	async run(cmd: string, args: string[], msg: Message): Promise<any> {
-		msg.channel.send('Furry gedetecteerd: ' + ( Math.random() > 0.5 
-		?  ' <@!336981509045092352>'
-		:  '<@367264082320949248>'));
+		msg.channel.send({content:'Furry gedetecteerd: ' + ( Math.random() > 0.5 
+		?  ' <@336981509045092352>'
+		:  '<@857573008478306334>')});
 	}
 }

@@ -34,7 +34,7 @@ class MemeCommand extends Command {
 		const res = await(await fetch('https://api.reddit.com/r/' + subreddit + '/new')).json();
 
 		//	Will be edited later
-		const editable = await msg.channel.send('Soon:tm:');
+		const editable = await msg.channel.send({content:'Soon:tm:'});
 
 		//	Just another random post
 		let post;
@@ -56,6 +56,6 @@ class MemeCommand extends Command {
 			.setImage(post.url)
 			.setFooter(new Date().toTimeString());
 
-		await editable.edit(embed);
+		await editable.edit({embeds: [embed]});
 	}
 }

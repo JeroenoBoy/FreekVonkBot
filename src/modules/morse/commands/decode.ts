@@ -17,9 +17,11 @@ class TestCommand extends Command {
 
 	async run(cmd: string, args: string[], msg: Message) {
 
-		await msg.channel.send(new MessageEmbed()
-		.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
-			.setColor('#1f456e')
-			.setDescription( Morse.decode( args.join(' ') ) ));
+		await msg.channel.send({embeds:[
+			new MessageEmbed()
+				.setAuthor(msg.author.tag, msg.author.avatarURL() || '')
+				.setColor('#1f456e')
+				.setDescription( Morse.decode( args.join(' ') ) )
+		]});
 	}
 }

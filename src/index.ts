@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 dotenv.config();
 
-import { Client } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 
 import UID from './util/uid';
 import sleep from './util/sleep';
@@ -17,24 +17,22 @@ import Command from './handlers/CommandHandler/Command';
 
 import MorseCode from './modules/morse/MorseCode';
 import CmdModule from './modules/commandModule/cmdModule';
-import VoiceModule from './modules/voice/VoiceModule';
 import BirthdayModule from './modules/birthday/Birthday';
-import { setupSlashCommands } from './slashcommands/handler';
-
 
 //
 //	Setting up
 //
 
-const Bot = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'] });
-const cmdHandler = new CommandHandler;
-
-setupSlashCommands(Bot);
+const Bot = new Client<true>({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'], intents: [
+	Intents.FLAGS.GUILDS,
+	Intents.FLAGS.GUILD_MESSAGES,
+	Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+] });
+const cmdHandler = new CommandHandler();
 
 const modules = {
 	cmdModule: new CmdModule(),
 	morse: new MorseCode(),
-	voice: new VoiceModule(),
 	birthday: new BirthdayModule()
 };
 
@@ -55,6 +53,5 @@ Bot.login(process.env.BOT_TOKEN);
 Bot.on('ready', () => {
 	console.log('Hey i logged in as: ' + chalk.green(Bot.user?.tag) + '.');
 	console.log('started');
-	
-	Bot.user?.setActivity('Chillen met haaien.', { type: 'CUSTOM_STATUS' });
+	Bot.user.setActivity('Chillen met haaien.', { type: 'CUSTOM' });
 });

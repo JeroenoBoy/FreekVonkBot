@@ -19,9 +19,9 @@ class TacoCommand extends Command {
 
 		if(modules.birthday.isBirthday(msg.author.id)
 		|| Math.random() > 0.95) {
-			return msg.channel.send('<:TacoTurtle:758600127291064321>')
+			return msg.channel.send({content:'<:TacoTurtle:758600127291064321>'})
 		}
 
-		msg.channel.send('🌮')
+		msg.channel.send({content:'🌮'})
 	}
 }

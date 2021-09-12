@@ -16,6 +16,6 @@ class TacoCommand extends Command {
 
 
 	async run(cmd: string, args: string[], msg: Message): Promise<any> {
-		await msg.channel.send('https://cdn.discordapp.com/attachments/739918066993070112/850325534265442304/FreekGunBig.png');
+		await msg.channel.send({content:'https://cdn.discordapp.com/attachments/739918066993070112/850325534265442304/FreekGunBig.png'});
 	}
 }

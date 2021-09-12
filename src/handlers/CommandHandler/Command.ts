@@ -36,8 +36,8 @@ class Command {
 	 * @param {String[]} args arguments of this command
 	 */
 	async run(cmd: string, args: string[], msg: Message) {
-		msg.channel.send('Deze command is <@301354663431634944> dom geweest'
+		msg.channel.send({content:'Deze command is <@301354663431634944> dom geweest'
 		+ '\n naam: ' + this.name
-		+ '\n cmd: '  + this.command);
+		+ '\n cmd: '  + this.command});
 	}
 };

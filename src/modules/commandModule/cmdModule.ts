@@ -18,11 +18,11 @@ class CmdModule {
 	async onInvalidCommand( cmd: string | undefined, args: string[], msg: Message ) {
 
 		if(!cmd) {
-			msg.channel.send('Hoi');
+			msg.channel.send({content:'Hoi'});
 		}
 
 		else {
-			msg.channel.send('Deze opdracht komt niet bekend voor bij mij.');
+			msg.channel.send({content:'Deze opdracht komt niet bekend voor bij mij.'});
 		}
 
 	}

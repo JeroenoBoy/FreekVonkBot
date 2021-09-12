@@ -15,7 +15,7 @@ class TacoCommand extends Command {
 
 
 	async run(cmd: string, args: string[], msg: Message): Promise<any> {
-		msg.channel.send('Nice')
+		msg.channel.send({content:'Nice'})
 			.then(m => m.react('👌'));
 	}
 }

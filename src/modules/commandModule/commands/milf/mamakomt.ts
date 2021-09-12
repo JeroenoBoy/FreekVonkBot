@@ -27,7 +27,7 @@ class TacoCommand extends Command {
 		this.floodmsg = temp.join('\n');
 
 		//	Events
-		Bot.on('messageReactionAdd', (msg: MessageReaction, user: User | PartialUser) => {
+		Bot.on('messageReactionAdd', (msg, user) => {
 			if(msg.emoji.name != '❌')
 				return;
 

@@ -20,7 +20,7 @@ class TestCommand extends Command {
 
 		modules.morse.setEncoded(msg.channel.id);
 
-		const m = await msg.channel.send('Dit kanaal is nu het kanaal voor gay messages.');
+		const m = await msg.channel.send({content:'Dit kanaal is nu het kanaal voor gay messages.'});
 		await sleep(3000);
 		m.delete();
 		msg.delete();
