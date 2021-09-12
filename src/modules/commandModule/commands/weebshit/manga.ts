@@ -140,7 +140,7 @@ class manga extends Command {
 
 		let _a;
 
-		msg.edit({content: '‫  ‫uwu',embeds: [
+		msg.edit({content: '‫  ‫uwu', components: [],embeds: [
 			new MessageEmbed()
 				.setAuthor(member.displayName, member.user.displayAvatarURL(), target.siteURL)
 				.setTitle('Manga: ' + target.title.english ?? target.title.romaji ?? target.title.native)

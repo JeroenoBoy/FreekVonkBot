@@ -138,7 +138,7 @@ class anime extends Command {
 	makeAnimeDisplay(target: any, msg: Message) {
 		const member = msg.member as GuildMember;
 
-		msg.edit({content: '‫  ‫uwu',embeds: [
+		msg.edit({content: '‫  ‫uwu', components: [], embeds: [
 			new MessageEmbed()
 				.setAuthor(member.displayName, member.user.displayAvatarURL(), target.siteURL)
 				.setTitle('Anime: ' + target.title.english ?? target.title.romaji ?? target.title.native)
