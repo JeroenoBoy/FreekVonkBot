@@ -52,7 +52,7 @@ class Birthday {
 		});
 
 
-		Bot.on('message', (msg) => {
+		Bot.on('messageCreate', (msg) => {
 			if(msg.author.bot) return;
 			if(msg.channel.id == this._channel) this.addBirthday(msg);
 		})

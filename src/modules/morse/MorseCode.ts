@@ -32,7 +32,7 @@ class MorseCode {
 
 
 		//	Bot message event
-		Bot.on('message', async (msg: Message) => {
+		Bot.on('messageCreate', async (msg: Message) => {
 			if(msg.author.bot) return;
 			if(msg.content.startsWith(prefix)) return;
 
