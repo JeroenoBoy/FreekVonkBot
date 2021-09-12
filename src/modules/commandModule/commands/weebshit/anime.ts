@@ -140,7 +140,7 @@ class anime extends Command {
 
 		msg.edit({content: '‫  ‫uwu',embeds: [
 			new MessageEmbed()
-				.setAuthor(member.displayName, member.user.displayAvatarURL())
+				.setAuthor(member.displayName, member.user.displayAvatarURL(), target.siteURL)
 				.setTitle('Anime: ' + target.title.english ?? target.title.romaji ?? target.title.native)
 				.setDescription(target.description
 					.replace(/<i>([^<>]*)<\/i>/g,'*$1*')
@@ -151,7 +151,6 @@ class anime extends Command {
 				.addField('Other names', target.title.romaji + '\n' + target.title.native)
 				.setImage(target.bannerImage)
 				.setThumbnail(target.coverImage.large)
-				.setURL(target.siteURL)
 				.setFooter('Data van https://anilist.co')
 		]})
 	}

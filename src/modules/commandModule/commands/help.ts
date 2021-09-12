@@ -22,11 +22,8 @@ class HelpCommand extends Command {
 
 		//	Events
 		Bot.on('messageReactionAdd', (msg, user) => {
-			if(msg.emoji.name != '❌')
-				return;
-
-			if(user.id == Bot.user?.id)
-				return;
+			if(msg.emoji.name != '❌') return;
+			if(user.id == Bot.user?.id) return;
 
 			//	Checking if there is an embed set
 			if(msg.message.embeds.length <= 0)
