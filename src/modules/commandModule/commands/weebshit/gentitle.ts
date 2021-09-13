@@ -26,15 +26,15 @@ class anime extends Command {
 
 		if(!member) return msg.reply({content: 'Invalid member'});
 
-		const m = await msg.reply({content: 'Getting data'});
+		const m = await msg.reply({content: 'Getting data, Dit kan een tijde duuren...'});
 
 		//	Fetching data
 
-		const res = await fetch('http://173.249.2.6:5008/')
+		const res = await fetch('http://172.18.0.11:5009/')
 			.then((d) => d.json())
-			.catch(() => m.edit({content:'Unable to retrieve data.'}))
+			.catch<void>(() => {m.edit({content:'Unable to retrieve data.'});})
 
-		if(!res) return;
+		if(!res || !res.data) return;
 		
 		m.edit({content: '.', embeds: [
 			new MessageEmbed()
