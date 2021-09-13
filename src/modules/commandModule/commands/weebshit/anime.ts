@@ -46,6 +46,10 @@ class anime extends Command {
 		const data = await this.listAnime(variables);
 		if(!data) return msg.edit({ content: 'Error while requesting api.' });
 
+		//	Fallback message
+
+		if(data.media.length == 0) return msg.edit({ content: 'No anime found.' });
+
 		//	Finding if its a full match
 		
 		const target = data.media.length == 1 ? data.media[0] : data.media.find(matchTitle(variables['search']));

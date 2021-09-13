@@ -40,7 +40,7 @@ class anime extends Command {
 			new MessageEmbed()
 				.setAuthor(member.displayName, member.user.displayAvatarURL())
 				.setTitle('Random anime titles')
-				.setDescription('```'+res.data.join('\n')+'```')
+				.setDescription('```-'+res.data.join('\n-')+'```')
 				.setFooter('Generated with GPT-2')
 		]})
 	}
