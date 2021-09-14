@@ -30,7 +30,7 @@ class anime extends Command {
 
 		//	Fetching data
 
-		const res = await fetch('http://172.18.0.11:5009/')
+		const res = await fetch('http://172.18.0.11:5009?prefix='+encodeURIComponent(args.join(' ')))
 			.then((d) => d.json())
 			.catch<void>(() => {m.edit({content:'Unable to retrieve data.'});})
 

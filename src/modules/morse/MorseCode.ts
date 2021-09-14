@@ -15,9 +15,6 @@ class MorseCode {
 	protected decodeChannel: string = '';
 
 
-
-
-
 	constructor() {
 
 		cmdHandler.loadDir(path.join(__dirname, 'commands'));

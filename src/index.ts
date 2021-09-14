@@ -18,6 +18,7 @@ import Command from './handlers/CommandHandler/Command';
 import MorseCode from './modules/morse/MorseCode';
 import CmdModule from './modules/commandModule/cmdModule';
 import BirthdayModule from './modules/birthday/Birthday';
+import VoiceModule from './modules/voiceModule/VoiceModule';
 
 //
 //	Setting up
@@ -26,14 +27,16 @@ import BirthdayModule from './modules/birthday/Birthday';
 const Bot = new Client<true>({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'], intents: [
 	Intents.FLAGS.GUILDS,
 	Intents.FLAGS.GUILD_MESSAGES,
-	Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+	Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+	Intents.FLAGS.GUILD_VOICE_STATES
 ] });
 const cmdHandler = new CommandHandler();
 
 const modules = {
 	cmdModule: new CmdModule(),
 	morse: new MorseCode(),
-	birthday: new BirthdayModule()
+	birthday: new BirthdayModule(),
+	voice: new VoiceModule()
 };
 
 export {

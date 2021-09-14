@@ -152,19 +152,14 @@ class CommandHandler extends EventEmitter {
 				return await this.loadDir(fdir);
 			}
 			
-
-			try {
-				//	Getting file
-				const temp = new (require(fdir));
+			//	Getting file
+			const temp = new (require(fdir));
 				
-				//	Checking if its the right class
-				if(!(temp instanceof Command)) return;
+			//	Checking if its the right class
+			if(!(temp instanceof Command)) return;
 	
-				//	Adding to command handler
-				this.loadCommand(temp);
-			}
-			catch {}
+			//	Adding to command handler
+			this.loadCommand(temp);
 		});
-
 	}
 }
