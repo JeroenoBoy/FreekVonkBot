@@ -1,9 +1,5 @@
-import { GuildMember, Message, MessageActionRow, MessageEmbed, MessageSelectMenu, VoiceChannel } from "discord.js";
-import fetch from "node-fetch";
-import ytdl from "ytdl-core";
+import { Message } from "discord.js";
 import { Command, modules } from "../../..";
-
-import { searchVideo } from 'usetube';
 
 export =
 class PlayCommand extends Command {

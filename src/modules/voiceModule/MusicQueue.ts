@@ -42,6 +42,16 @@ export class MusicQueue {
 	public isEmpty(): boolean {
 		return this.requests.length != 0;
 	}
+
+
+	public getRange(start: number, amount: number) {
+		const list: SongRequest[] = [];
+		for(let i = start; i < start+amount; i++) {
+			if(!this.requests[i]) return list;
+			list.push(this.requests[i]);
+		}
+		return list;
+	}
 }
 
 
@@ -49,6 +59,8 @@ export interface SongRequestNoUser {
 	id: string,
 	title: string,
 	origin: TrackOrigin,
+	artist?: string,
+	url?: string
 	duration: number
 }
 
@@ -58,5 +70,5 @@ export interface SongRequest extends SongRequestNoUser {
 
 
 export enum TrackOrigin {
-	YOUTUBE,SPOTIFY
+	YOUTUBE,SPOTIFY,SOUNDCLOUD
 }

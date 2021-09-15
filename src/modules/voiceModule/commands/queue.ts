@@ -1,9 +1,9 @@
-import { GuildMember, Message, MessageActionRow, MessageEmbed, MessageSelectMenu, VoiceChannel } from "discord.js";
-import fetch from "node-fetch";
-import ytdl from "ytdl-core";
+import { GuildMember, Message, MessageEmbed } from "discord.js";
 import { Command, modules } from "../../..";
 
 import { searchVideo } from 'usetube';
+import MusicPlayer, { parseDuration } from "../MusicPlayer";
+import { MusicQueue, SongRequest } from "../MusicQueue";
 
 export =
 class NowPlaying extends Command {
@@ -26,29 +26,27 @@ class NowPlaying extends Command {
 
 		const player = modules.voice.resolve(msg.guild!);
 		if(!player) return msg.reply({content: 'Ik ben niet in een kanaal' });
-		
-		if(!player.playing) {
-			if(player.queue.isEmpty()) return msg.reply({content: 'Ik speel geen liedjes af'})
+		if(!player.playing) return msg.reply({content: 'Ik speel geen liedjes af'})
 
-			return msg.reply({embeds: [
-				new MessageEmbed()
-					.setAuthor(member.displayName, member.user.displayAvatarURL())
-					.setTitle('Wachtrij')
-					.setDescription('```'
-						+ player.queue.map((s, i) => '#'+(i+1) + ' - ' + s.title).join('\n')
-						+ '```')
-			]})
+		return msg.reply({embeds:[this.createEmbed(member, player, 0)]})
+	}
 
-		}
+	
+	createEmbed(member: GuildMember, player: MusicPlayer, page: number) {
 
-		return msg.reply({embeds: [
-			new MessageEmbed()
-				.setAuthor(member.displayName, member.user.displayAvatarURL())
-				.setTitle('Wachtrij')
-				.setDescription('```'
-					+ 'NP - ' + player.playing!.title + '\n'
-					+ player.queue.map((s, i) => '#'+(i+1) + ' - ' + s.title).join('\n')
-					+ '```')
-		]})
+		const queue = player.queue.getRange(page*20,20);
+
+		return new MessageEmbed()
+			.setAuthor(member.displayName, member.user.displayAvatarURL())
+			.setTitle('Wachtrij')
+			.setDescription('```nim\n'
+				+ 'NP) ' + this.formatSRQ(player.playing!) + '\n'
+				+ queue.map((s, i) => (i+1) + ') ' + this.formatSRQ(s)).join('\n')
+				+ '```')
+	}
+
+
+	formatSRQ(req: SongRequest) {
+		return (req.artist ? (req.artist+' - ') : '') + req.title + '  (' + parseDuration(req.duration) + ')'
 	}
 }

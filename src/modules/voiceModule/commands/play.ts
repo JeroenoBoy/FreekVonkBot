@@ -1,17 +1,15 @@
-import { GuildMember, Message, MessageActionRow, MessageEmbed, MessageSelectMenu, VoiceChannel } from "discord.js";
-import fetch from "node-fetch";
-import ytdl from "ytdl-core";
+import { GuildMember, Message, MessageActionRow, MessageSelectMenu, VoiceChannel } from "discord.js";
 import { Command, modules } from "../../..";
-
 import RequestUtils from "../RequestUtils";
-import { SongRequestNoUser } from "../MusicQueue";
+import { SongRequestNoUser, TrackOrigin } from "../MusicQueue";
+import { parseDuration } from "../MusicPlayer";
 
 export =
 class PlayCommand extends Command {
 
 	setup() {
 		this.name = 'Zing';
-		this.usage = '$pzing <query | url>';
+		this.usage = '$pzing [-yt] <query | url>';
 		this.catagory = 'VOICE';
 		
 		this.command = 'zing';
@@ -70,6 +68,37 @@ class PlayCommand extends Command {
 				await this.loadManySongs(tracks, m, member);
 			}
 			break;
+
+			//	SoundCloud
+
+			case query.startsWith('-yt'): {
+				// return msg.reply('The soundcloud lib is currently broken.');
+
+				args.shift();
+				const query = args.join(' ');
+				const tracks = await RequestUtils.getFromYoutube(query);
+				
+				await this.selectSong(tracks, m, member);
+			}
+			break;
+
+			case /^https:\/\/soundcloud.com\/\w+\/sets\/\w+/i.test(query): {
+				// return msg.reply('The soundcloud lib is currently broken.');
+
+				const tracks = await RequestUtils.getSoundCloudPlaylist(query);
+				await this.loadManySongs(tracks, m, member);
+			}
+			break;
+
+			case /^https:\/\/soundcloud.com\/\w+\/\w+/i.test(query): {
+				const track = await RequestUtils.getSoundCloudSong(query);
+				if(!track) return msg.edit({content:'Ik kon dit liedje niet vinden'});
+
+				await this.loadSong(track, m, member);
+			}
+			break;
+
+			//	Errors
 			
 			case query.startsWith('https://'):
 				await m.edit({content: 'Deze URL is mij niet bekent.'});
@@ -77,14 +106,15 @@ class PlayCommand extends Command {
 			case query.startsWith('http://'):
 				await m.edit({content: 'Deze URL is mij niet bekent.'});
 			break;
-
 			case query == '': {
 				await m.edit({content: 'Lever aub een liedje'});
 			}
 			break;
+
+			//	SoundCloud
 			
 			default: {
-				const videos = await RequestUtils.getFromYoutube(query);
+				const videos = await RequestUtils.querySoundCloud(query);
 		
 				const vid = videos.find(v=>v.title.toLowerCase() == query.toLowerCase())
 		
@@ -104,7 +134,7 @@ class PlayCommand extends Command {
 			.setCustomId('select')
 			.addOptions(songs.map(s=>({
 				label: s.title,
-				description: `Lengte: ${s.duration} seconden`,
+				description: `Lengte: ${parseDuration(s.duration)}${s.artist?` Van: ${s.artist}`:''}`,
 				value: s.id
 			})))
 		

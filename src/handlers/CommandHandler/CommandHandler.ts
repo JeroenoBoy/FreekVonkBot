@@ -88,12 +88,12 @@ class CommandHandler extends EventEmitter {
 				}
 				catch(e) {
 					msg.reply('Oh nee, er is een probleempje!');
-					console.error(e);
+					console.log(e);
 				}
 			}
 			catch(e) {
 				msg.reply('Oh nee, er is een erg probleempje!');
-				console.error(e);
+				console.log(e);
 			}
 		});
 
