@@ -24,12 +24,14 @@ import VoiceModule from './modules/voiceModule/VoiceModule';
 //	Setting up
 //
 
-const Bot = new Client<true>({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'], intents: [
-	Intents.FLAGS.GUILDS,
-	Intents.FLAGS.GUILD_MESSAGES,
-	Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-	Intents.FLAGS.GUILD_VOICE_STATES
-] });
+const Bot = new Client<true>({
+	partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER', 'USER'], intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+		Intents.FLAGS.GUILD_VOICE_STATES
+	]
+});
 const cmdHandler = new CommandHandler();
 
 const modules = {
@@ -56,5 +58,5 @@ Bot.login(process.env.BOT_TOKEN);
 Bot.on('ready', () => {
 	console.log('Hey i logged in as: ' + chalk.green(Bot.user?.tag) + '.');
 	console.log('started');
-	Bot.user.setActivity('Chillen met haaien.', { type: 'CUSTOM' });
+	Bot.user.setActivity('met haaien.', { type: 'PLAYING' });
 });

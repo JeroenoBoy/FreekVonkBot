@@ -15,22 +15,21 @@ export default class MusicPlayer {
 
 	constructor(channel: VoiceChannel) {
 		this.channel = channel;
-		
+
 		this.player = createAudioPlayer();
 		this.connection = joinVoiceChannel({
 			channelId: channel.id,
-			guildId: channel.guildId,
+			guildId: channel.guildId, // @ts-ignore
 			adapterCreator: channel.guild.voiceAdapterCreator,
 		});
 
 		this.player.on('stateChange', (_, newState) => {
-			if(newState.status != AudioPlayerStatus.Idle) return;
+			if (newState.status != AudioPlayerStatus.Idle) return;
 			this.playing = undefined;
-			
+
 			const next = this.queue.next();
-			if(next) return this.play(next);
-			
-		})
+			if (next) return this.play(next);
+		});
 
 		this.connection.subscribe(this.player);
 	}
@@ -44,7 +43,7 @@ export default class MusicPlayer {
 
 		//	Checking if the song is from youtube or not.
 
-		if(song.origin == TrackOrigin.SPOTIFY) {
+		if (song.origin == TrackOrigin.SPOTIFY) {
 			const videos = await RequestUtils.querySoundCloud(song.artist + ' - ' + song.title);
 			song.id = videos[0].id
 		}
@@ -53,20 +52,20 @@ export default class MusicPlayer {
 
 		let songStream;
 		let type: StreamType | undefined;
-		
-		switch(song.origin) {
+
+		switch (song.origin) {
 			case TrackOrigin.SOUNDCLOUD:
 				const soundCloudStream = await RequestUtils.getSoundCloudStream(song);
 				songStream = soundCloudStream.stream;
 				type = undefined;
 				break;
 			default:
-				const youtubeStream = await stream('https://www.youtube.com/watch?v='+ encodeURIComponent(song.id));
+				const youtubeStream = await stream('https://www.youtube.com/watch?v=' + encodeURIComponent(song.id));
 				songStream = youtubeStream.stream;
 				type = youtubeStream.type;
 				break;
 		}
-		
+
 		//	Playing song
 
 		this.player.play(createAudioResource(songStream, { inputType: type }));
@@ -74,13 +73,13 @@ export default class MusicPlayer {
 
 
 	public async skip() {
-		if(!this.playing) throw new Error('No song getting played!');
+		if (!this.playing) throw new Error('No song getting played!');
 		this.player.stop();
 	}
 
 
 	public request(song: SongRequest) {
-		if(!this.playing)
+		if (!this.playing)
 			this.play(song);
 		else
 			this.queue.add(song);
@@ -98,13 +97,13 @@ export default class MusicPlayer {
 export function parseDuration(duration: number): string {
 
 	let hour = -1, minutes = 0, seconds = 0;
-	if(duration > 3600) {
+	if (duration > 3600) {
 		let [_hour, rest] = calc(duration, 3600);
 		duration = rest;
 		hour = _hour;
 	}
 
-	if(duration > 60) {
+	if (duration > 60) {
 		let [_min, rest] = calc(duration, 60);
 		duration = rest;
 		minutes = _min;
@@ -112,14 +111,14 @@ export function parseDuration(duration: number): string {
 
 	seconds = duration;
 
-	if(hour != -1) return `${hour}:${minL(minutes,2)}:${minL(seconds,2)}`;
-	return `${minutes}:${minL(seconds,2)}`;
+	if (hour != -1) return `${hour}:${minL(minutes, 2)}:${minL(seconds, 2)}`;
+	return `${minutes}:${minL(seconds, 2)}`;
 }
 
-function calc(inp: number, div: number): [ res: number, target: number ] {
-	const devided = inp/div;
+function calc(inp: number, div: number): [res: number, target: number] {
+	const devided = inp / div;
 	const shaved = Math.floor(devided);
-	
+
 	return [
 		shaved,
 		(devided - shaved) * div
@@ -127,8 +126,8 @@ function calc(inp: number, div: number): [ res: number, target: number ] {
 }
 
 function minL(inp: number, length: number) {
-	let s = (''+inp).split('.')[0];
-	while(s.length < length)
-		s+='0';
+	let s = ('' + inp).split('.')[0];
+	while (s.length < length)
+		s += '0';
 	return s;
 }

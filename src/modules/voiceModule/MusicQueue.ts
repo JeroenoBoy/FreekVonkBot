@@ -1,4 +1,4 @@
-import { Snowflake } from "discord-api-types";
+import { Snowflake } from "discord-api-types/v10";
 
 export class MusicQueue {
 
@@ -6,8 +6,8 @@ export class MusicQueue {
 	private shuffle: boolean = false;
 
 	public next() {
-		if(this.shuffle) {
-			const index = Math.floor(Math.random() * this.requests.length-.001);
+		if (this.shuffle) {
+			const index = Math.floor(Math.random() * this.requests.length - .001);
 			return this.requests.splice(index, 1)[0];
 		}
 		return this.requests.shift();
@@ -23,14 +23,14 @@ export class MusicQueue {
 		return this.requests.map(fn);
 	}
 
-	
+
 	public removeAt(index: number) {
-		this.requests.splice(index-1, 1);
+		this.requests.splice(index - 1, 1);
 	}
 
 
 	public removeRange(start: number, end: number) {
-		this.requests.splice(start-1, end-start-1);
+		this.requests.splice(start - 1, end - start - 1);
 	}
 
 
@@ -46,8 +46,8 @@ export class MusicQueue {
 
 	public getRange(start: number, amount: number) {
 		const list: SongRequest[] = [];
-		for(let i = start; i < start+amount; i++) {
-			if(!this.requests[i]) return list;
+		for (let i = start; i < start + amount; i++) {
+			if (!this.requests[i]) return list;
 			list.push(this.requests[i]);
 		}
 		return list;
@@ -70,5 +70,5 @@ export interface SongRequest extends SongRequestNoUser {
 
 
 export enum TrackOrigin {
-	YOUTUBE,SPOTIFY,SOUNDCLOUD
+	YOUTUBE, SPOTIFY, SOUNDCLOUD
 }
