@@ -84,7 +84,7 @@ export =
 					.addField('Regio', regionData.regio, true)
 					.addField('Temperatuur', regionData.temperature + '°C', true)
 					.addField('Luchvochtigheid', regionData.humidity + '%', true)
-					.addField('Regen', regionData.rainFallLAstHour + 'ml', true)
+					.addField('Regen', regionData.rainFallLastHour + 'ml', true)
 					.addField('Windrichting', regionData.winddirection, true)
 					.addField('Wind', regionData.windspeed + ' km/h', true)
 					.setFooter({ text: 'Bericht door: ' + data.forecast.weatherreport.author })
