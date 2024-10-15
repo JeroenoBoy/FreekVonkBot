@@ -10,167 +10,165 @@ import { PassThrough } from 'stream';
 
 namespace RequestUtils {
 
-	//#region Spotify
-	
-	//#region Spotify Authentication handler
-	
-	const spotifyApi = new SpotifyWebApi({
-		clientId: 'b0ed0e38f04f4af1b1455d3edd9ead5c',
-		clientSecret: 'f3e91ba52acd4ccf89d5867b8801a18e'
-	});
-	
-	let _promise: Promise<void> | undefined;
-	let _expires: number = 0;
+    //#region Spotify
 
-	function authorizeSpotify() {
-		if(_promise) return _promise;
-		if(Date.now() < _expires) return;
+    //#region Spotify Authentication handler
 
-		console.log('Getting new spotify token');
+    const spotifyApi = new SpotifyWebApi({
+        clientId: 'b0ed0e38f04f4af1b1455d3edd9ead5c',
+        clientSecret: 'f3e91ba52acd4ccf89d5867b8801a18e'
+    });
 
-		return _promise = spotifyApi.clientCredentialsGrant()
-			.then((d) => {
-				spotifyApi.setAccessToken(d.body['access_token'])
-				_expires = Date.now() + d.body['expires_in']*1000;
-			})
-			.catch((e) => console.log('Error while authorizing spotify', e));
-	}
+    let _promise: Promise<void> | undefined;
+    let _expires: number = 0;
 
-	//#endregion
+    function authorizeSpotify() {
+        if (_promise) return _promise;
+        if (Date.now() < _expires) return;
 
-	export async function getTrack(url: string): Promise<SongRequestNoUser> {
-		await authorizeSpotify();
+        console.log('Getting new spotify token');
 
-		const id = url.match(/^https:\/\/open.spotify.com\/track\/(.*)\?/i)![1]!;
-		const { body: d } = await spotifyApi.getTrack(id);
-		
-		return {
-			id: d.id,
-			title: d.name,
-			duration: d.duration_ms/1000,
-			artist: d.artists[0].name,
-			origin: TrackOrigin.SPOTIFY,
-		}
-	}
+        return _promise = spotifyApi.clientCredentialsGrant()
+            .then((d) => {
+                spotifyApi.setAccessToken(d.body['access_token'])
+                _expires = Date.now() + d.body['expires_in'] * 1000;
+            })
+            .catch((e) => console.log('Error while authorizing spotify', e));
+    }
 
-	//	Load a playlist
+    //#endregion
 
-	export async function getTracksFromPlaylist(url: string): Promise<SongRequestNoUser[]> {
-		await authorizeSpotify();
+    export async function getTrack(url: string): Promise<SongRequestNoUser> {
+        await authorizeSpotify();
 
-		const id = url.match(/^https:\/\/open.spotify.com\/playlist\/(.*)\?/i)![1]!;
-		const { body: d } = await spotifyApi.getPlaylistTracks(id);
+        const id = url.match(/^https:\/\/open.spotify.com\/track\/(.*)\?/i)![1]!;
+        const { body: d } = await spotifyApi.getTrack(id);
 
-		return d.items.map(({track}): SongRequestNoUser => ({
-			id: track.id,
-			title: track.name,
-			duration: track.duration_ms/1000,
-			artist: track.artists[0].name,
-			origin: TrackOrigin.SPOTIFY
-		}))
-	}
+        return {
+            id: d.id,
+            title: d.name,
+            duration: d.duration_ms / 1000,
+            artist: d.artists[0].name,
+            origin: TrackOrigin.SPOTIFY,
+        }
+    }
 
-	//#endregion
+    //	Load a playlist
 
-	//#region Youtube
+    export async function getTracksFromPlaylist(url: string): Promise<SongRequestNoUser[]> {
+        await authorizeSpotify();
+        const id = url.match(/^https:\/\/open.spotify.com\/playlist\/(.*)\?/i)![1]!;
+        const { body: d } = await spotifyApi.getPlaylistTracks(id);
+        return d.items.map(({ track }): SongRequestNoUser => ({
+            id: track!.id,
+            title: track!.name,
+            duration: track!.duration_ms / 1000,
+            artist: track!.artists[0].name,
+            origin: TrackOrigin.SPOTIFY
+        }))
+    }
 
-	export async function getFromYoutube(url: string): Promise<SongRequestNoUser[]> {
-		const videos = await search(url) as Video[];
-		
-		return videos.map((v):SongRequestNoUser => ({
-			id: v.id!,
-			title: v.title!.slice(0,50),
-			duration: v.durationInSec,
-			origin: 0
-		}));
-	}
+    //#endregion
 
-	export async function getYoutubePlaylist(_url: string) {
-		const urlparser = new url.URL(_url);
-		const id = urlparser.searchParams.get('list');
+    //#region Youtube
 
-		if(!id) return null;
+    export async function getFromYoutube(url: string): Promise<SongRequestNoUser[]> {
+        const videos = await search(url) as Video[];
 
-		return await getPlaylistVideos(id)
-			.then(v=>v.map((v): SongRequestNoUser => ({
-				id: v.id,
-				title: v.original_title.slice(0,50),
-				duration: v.duration,
-				origin: 0
-			})));
-	}
+        return videos.map((v): SongRequestNoUser => ({
+            id: v.id!,
+            title: v.title!.slice(0, 50),
+            duration: v.durationInSec,
+            origin: 0
+        }));
+    }
 
-	//#endregion
+    export async function getYoutubePlaylist(_url: string) {
+        const urlparser = new url.URL(_url);
+        const id = urlparser.searchParams.get('list');
 
-	//#region Soundcloud
+        if (!id) return null;
 
-	const soundcloud = new Soundcloud('DF1J1VJGeIPGyLofgH0KMq6LFWxNU2H9')
+        return await getPlaylistVideos(id)
+            .then(v => v.map((v): SongRequestNoUser => ({
+                id: v.id,
+                title: v.original_title.slice(0, 50),
+                duration: v.duration,
+                origin: 0
+            })));
+    }
 
-	export async function querySoundCloud(query: string): Promise<SongRequestNoUser[]> {
-		const tracks = await soundcloud.tracks.searchV2({q: query});
+    //#endregion
 
-		return tracks.collection.map((t) => ({
-			id: `${t.user.permalink}/${t.permalink}`,
-			title: t.title,
-			duration: t.duration/1000,
-			artist: t.user.username,
-			origin: TrackOrigin.SOUNDCLOUD
-		}));
-	}
+    //#region Soundcloud
 
-	export async function getSoundCloudSong(query: string): Promise<SongRequestNoUser | null> {
-		const t = await soundcloud.tracks.getV2(query);
+    const soundcloud = new Soundcloud('DF1J1VJGeIPGyLofgH0KMq6LFWxNU2H9')
 
-		return {
-			id: `${t.user.permalink}/${t.permalink}`,
-			title: t.title,
-			duration: t.duration/1000,
-			artist: t.user.username,
-			origin: TrackOrigin.SOUNDCLOUD
-		};
-	}
+    export async function querySoundCloud(query: string): Promise<SongRequestNoUser[]> {
+        const tracks = await soundcloud.tracks.searchV2({ q: query });
 
-	export async function getSoundCloudPlaylist(url: string): Promise<SongRequestNoUser[]> {
-		const playlist = await soundcloud.playlists.getV2(url);
+        return tracks.collection.map((t) => ({
+            id: `${t.user.permalink}/${t.permalink}`,
+            title: t.title,
+            duration: t.duration / 1000,
+            artist: t.user.username,
+            origin: TrackOrigin.SOUNDCLOUD
+        }));
+    }
 
-		return playlist.tracks.map((t) => ({
-			id: `${t.user.permalink}/${t.permalink}`,
-			title: t.title,
-			duration: t.duration/1000,
-			artist: t.user.username,
-			origin: TrackOrigin.SOUNDCLOUD
-		}));
-	}
+    export async function getSoundCloudSong(query: string): Promise<SongRequestNoUser | null> {
+        const t = await soundcloud.tracks.getV2(query);
 
-	export function getSoundCloudStream(song: SongRequest) {
-		return new SoundCloudStream(`https://soundcloud.com/${song.id}`).Start();
-	}
+        return {
+            id: `${t.user.permalink}/${t.permalink}`,
+            title: t.title,
+            duration: t.duration / 1000,
+            artist: t.user.username,
+            origin: TrackOrigin.SOUNDCLOUD
+        };
+    }
 
-	class SoundCloudStream {
+    export async function getSoundCloudPlaylist(url: string): Promise<SongRequestNoUser[]> {
+        const playlist = await soundcloud.playlists.getV2(url);
 
-		public stream: PassThrough;
-		public readonly url: string;
+        return playlist.tracks.map((t) => ({
+            id: `${t.user.permalink}/${t.permalink}`,
+            title: t.title,
+            duration: t.duration / 1000,
+            artist: t.user.username,
+            origin: TrackOrigin.SOUNDCLOUD
+        }));
+    }
 
-		constructor(url: string) {
-			this.url = url;
-			this.stream = new PassThrough();
-		}
+    export function getSoundCloudStream(song: SongRequest) {
+        return new SoundCloudStream(`https://soundcloud.com/${song.id}`).Start();
+    }
 
-		private started = false;
-		public async Start() {
-			if(this.started) return this;
-			this.started = true;
+    class SoundCloudStream {
 
-			const track = await soundcloud.util.streamTrack(this.url);
-			track.pipe(this.stream);
+        public stream: PassThrough;
+        public readonly url: string;
 
-			return this;
-		}
+        constructor(url: string) {
+            this.url = url;
+            this.stream = new PassThrough();
+        }
+
+        private started = false;
+        public async Start() {
+            if (this.started) return this;
+            this.started = true;
+
+            const track = await soundcloud.util.streamTrack(this.url);
+            track.pipe(this.stream);
+
+            return this;
+        }
 
 
-	}
+    }
 
-	//#endregion
+    //#endregion
 }
 
 
