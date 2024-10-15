@@ -27,5 +27,6 @@ COPY --from=Installer /installer/node_modules /app/node_modules
 COPY --from=Builder /build/dist /app/dist
 COPY --from=Builder /build/config.json /app
 COPY --from=Builder /build/package.json /app
+COPY --from=Builder /build/data.json /app
 
 CMD ["npm", "run", "start"]
